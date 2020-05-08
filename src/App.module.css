@@ -1,0 +1,17 @@
+.body{
+    display: flex;
+    flex-direction: row;
+    margin-left: 450px;
+}
+.ul{
+    margin-top: 100px;
+    margin-right: 20px;
+}
+.ticketsArea{
+    display: flex;
+    flex-direction: row;
+    border: 1px solid black;
+}
+.wrapper{
+    margin-top: 100px;
+}
