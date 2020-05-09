@@ -1,7 +1,7 @@
 .body{
     display: flex;
     flex-direction: row;
-    margin-left: 450px;
+    margin-left: 26%;
 }
 .ul{
     margin-top: 100px;
@@ -14,4 +14,7 @@
 }
 .wrapper{
     margin-top: 100px;
+    .img{
+        padding-left: 90px;
+    }
 }

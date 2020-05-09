@@ -3,7 +3,7 @@
 /* eslint-disable react/no-array-index-key */
 
 import React, { useState, useEffect } from 'react';
-import './App.module.css';
+import './App.module.scss';
 import axios from 'axios';
 import AviaSales from './Aviasales';
 

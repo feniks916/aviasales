@@ -8,6 +8,7 @@ import React, { useState } from 'react';
 import { Checkbox } from 'antd';
 import {
   TicketsArea,
+  ButtonLeft,
   Button,
   ButtonArea,
   PriceArea,
@@ -16,9 +17,14 @@ import {
   SecondPoint,
 } from './styles';
 import { CheckboxArea, CheckboxItem, CheckboxSpan, CheckText } from './checkbox';
-import classes from './App.module.css';
+import classes from './App.module.scss';
+import logo from './Logo.svg'
 
 const AviaSales = props => {
+  const [blueColor, setblueColor] = useState({
+    first: true,
+    second: false,
+  })
   const [stopsInTicketValue, setStopsIncludedValue] = useState({
     stopsInTicketValue: 1,
   });
@@ -79,6 +85,10 @@ const AviaSales = props => {
   let renderingData = [];
 
   const handleCheapiest = () => {
+    setblueColor({
+      first: true,
+      second: false,
+    })
     setStopsIncludedValue({
       ...stopsInTicketValue,
       stopsInTicketValue: number,
@@ -89,6 +99,10 @@ const AviaSales = props => {
   };
 
   const handleQuickliest = () => {
+    setblueColor({
+      first: false,
+      second: true,
+    })
     setStopsIncludedValue({
       ...stopsInTicketValue,
       stopsInTicketValue: number,
@@ -276,11 +290,12 @@ const AviaSales = props => {
           ))}
         </CheckboxArea>
             <div className={classes.wrapper}>
+              <img className={classes.img} src={logo} alt=""/>
               <ButtonArea>
-                <Button onClick={handleCheapiest}>
+                <ButtonLeft selected={blueColor.first} onClick={handleCheapiest}>
                   <p>Самый дешевый</p>
-                </Button>
-                <Button onClick={handleQuickliest}>
+                </ButtonLeft>
+                <Button selected={blueColor.second} onClick={handleQuickliest}>
                   <p>Самый быстрый</p>
                 </Button>
               </ButtonArea>
@@ -297,8 +312,7 @@ const AviaSales = props => {
                           <span>{el.forward}</span>
                         </li>
                         <li>
-                          {`${el.endpointTimeH}:${el.endpointTimeM} - ${el.Hdur < 10 ? `0${el.Hdur}` : el.Hdur}: 
-                      ${ el.Mdur >= 10 ? el.Mdur : `0${el.Mdur}`}`}
+                          {`${el.endpointTimeH}:${el.endpointTimeM} - ${el.Hdur < 10 ? `0${el.Hdur}` : el.Hdur}:${ el.Mdur >= 10 ? el.Mdur : `0${el.Mdur}`}`}
                         </li>
                       </ul>
                       <ul>
@@ -306,7 +320,7 @@ const AviaSales = props => {
                           <span>в пути</span>
                         </li>
                         <li>
-                          {`${el.hours < 10 ? `0${el.hours}` : el.hours} час ${el.minutes < 10 ? `0${el.minutes}` : el.minutes} мин`}
+                          {`${el.hours < 10 ? `0${el.hours}` : el.hours}ч ${el.minutes < 10 ? `0${el.minutes}` : el.minutes}м`}
                         </li>
                       </ul>
                       <ul>
@@ -322,8 +336,7 @@ const AviaSales = props => {
                           <span>{el.toward}</span>
                         </li>
                         <li>
-                          {`${el.endpointTimeHBack}:${el.endpointTimeMBack} - ${el.HdurBack < 10 ? `0${el.HdurBack}` : el.HdurBack}: 
-                      ${ el.MdurBack >= 10 ? el.MdurBack : `0${el.MdurBack}`}`}
+                          {`${el.endpointTimeHBack}:${el.endpointTimeMBack} - ${el.HdurBack < 10 ? `0${el.HdurBack}` : el.HdurBack}:${ el.MdurBack >= 10 ? el.MdurBack : `0${el.MdurBack}`}`}
                         </li>
                       </ul>
                       <ul>
@@ -331,7 +344,7 @@ const AviaSales = props => {
                           <span>в пути</span>
                         </li>
                         <li>
-                          {`${el.hoursBack < 10 ? `0${el.hoursBack}` : el.hoursBack} час ${el.minutesBack < 10 ? `0${el.minutesBack}` : el.minutesBack} мин`}
+                          {`${el.hoursBack < 10 ? `0${el.hoursBack}` : el.hoursBack}ч  ${el.minutesBack < 10 ? `0${el.minutesBack}` : el.minutesBack}м`}
                         </li>
                       </ul>
                       <ul>

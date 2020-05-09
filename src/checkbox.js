@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const CheckboxArea = styled.ul`
-  margin-top: 110px;
+  margin-top: 200px;
   margin-right: 10px;
   background-color: white;
   width: 252px;
