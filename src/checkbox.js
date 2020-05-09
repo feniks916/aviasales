@@ -35,4 +35,8 @@ export const CheckboxItem = styled.li`
 
 export const CheckboxSpan = styled.span`
   margin-left: 25px;
+  label{
+    width: 220px;
+  height: 28px;
+  }
 `;

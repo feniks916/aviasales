@@ -19,13 +19,18 @@ import { CheckboxArea, CheckboxItem, CheckboxSpan, CheckText } from './checkbox'
 import classes from './App.module.css';
 
 const AviaSales = props => {
-  const [step, setStep] = useState({
-    step: 1,
+  const [stopsInTicketValue, setStopsIncludedValue] = useState({
+    stopsInTicketValue: 1,
   });
-  const [checked, setChecked] = useState([]);
+  console.log(stopsInTicketValue)
+  const [checkedCheckboxValue, setcheckedCheckboxValue] = useState([]);
+  if(checkedCheckboxValue.length > 3 && !checkedCheckboxValue.includes(5)){
+    setcheckedCheckboxValue([1,2,3,4,5])
+  }
+  
   const [data, setData] = useState([]);
 
-  let { ticketsList,stop } = props;
+  let { ticketsList } = props;
   const checkbox = [
     { key: 1, id: 1, value: 'Без остановок', steps: 0 },
     { key: 2, id: 2, value: '1 остановка', steps: 1 },
@@ -34,45 +39,59 @@ const AviaSales = props => {
     { key: 5, id: 5, value: 'Все', steps: 5 },
   ];
 
-  const handler = checked;
-  let newChecked = [];
-  const changing = num => {
+  const filterValue = checkedCheckboxValue;
+
+  let checkboxArrayCopy = [];
+  const handleSelectCheckbox = num => {
     setData([]);
-    const currentIndex = checked.indexOf(num);
-    newChecked = [...checked];
+    const currentIndex = checkedCheckboxValue.indexOf(num);
+    checkboxArrayCopy = [...checkedCheckboxValue];
 
     if (currentIndex === -1) {
-      newChecked.push(num);
-    } else {
-      newChecked.splice(currentIndex, 1);
+      checkboxArrayCopy.push(num);
     }
-    setChecked(newChecked);
-    const sorted = newChecked.sort((a, b) => b - a);
+    else {
+      checkboxArrayCopy.splice(currentIndex, 1);
+    }
+
+    setcheckedCheckboxValue(checkboxArrayCopy);
+
+    const sorted = checkboxArrayCopy.sort((a, b) => b - a);
     if (sorted.length === 0) {
       sorted[0] = 1;
     }
-    setStep({
-      ...step,
-      step: sorted[0] - 1,
+    setStopsIncludedValue({
+      ...stopsInTicketValue,
+      stopsInTicketValue: sorted[0] - 1,
     });
   };
 
-  const number = step.step;
+  const handleSelectAll = num => {
+    const currentIndex = checkedCheckboxValue.indexOf(num);
+    if (currentIndex === -1) {
+      checkboxArrayCopy.push(1,2,3,4,5);
+    }
+
+    setcheckedCheckboxValue(checkboxArrayCopy);
+  }
+
+  const number = stopsInTicketValue.stopsInTicketValue;
   let renderingData = [];
-  const cheap = () => {
-    setStep({
-      ...step,
-      step: number,
+
+  const handleCheapiest = () => {
+    setStopsIncludedValue({
+      ...stopsInTicketValue,
+      stopsInTicketValue: number,
     });
     let cheapData = [...data];
     cheapData = arr.sort((a, b) => a.price - b.price).splice(0, 5);
     setData(cheapData);
   };
 
-  const quick = () => {
-    setStep({
-      ...step,
-      step: number,
+  const handleQuickliest = () => {
+    setStopsIncludedValue({
+      ...stopsInTicketValue,
+      stopsInTicketValue: number,
     });
     let quickData = [...data];
     quickData = arr.sort(
@@ -82,9 +101,8 @@ const AviaSales = props => {
   };
 
   let arr = [];
-  
-  if(stop){
-    arr = ticketsList.map((el, index) => (
+
+  arr = ticketsList.map((el, index) => (
     {
       id: index,
       price: el.price,
@@ -93,28 +111,28 @@ const AviaSales = props => {
       toward: `${el.segments[1].origin}-${el.segments[0].destination}`,
       timeForward: el.segments[0].duration,
       hours: Math.floor(el.segments[0].duration / 60) >= 24
-      ? Number(el.segments[0].date
-        .split('T')[1]
-        .split('.')[0]
-        .split(':')
-        .splice(0, 1)) + Number(Math.floor(el.segments[0].duration / 60) - 24)
-      : Number(el.segments[0].date
-        .split('T')[1]
-        .split('.')[0]
-        .split(':')
-        .splice(0, 1)) + Math.floor(el.segments[0].duration / 60),
+        ? Number(el.segments[0].date
+          .split('T')[1]
+          .split('.')[0]
+          .split(':')
+          .splice(0, 1)) + Number(Math.floor(el.segments[0].duration / 60) - 24)
+        : Number(el.segments[0].date
+          .split('T')[1]
+          .split('.')[0]
+          .split(':')
+          .splice(0, 1)) + Math.floor(el.segments[0].duration / 60),
       timeToward: el.segments[1].duration,
       hoursBack: Math.floor(el.segments[1].duration / 60) >= 24
-      ? Number(el.segments[1].date
-        .split('T')[1]
-        .split('.')[0]
-        .split(':')
-        .splice(0, 1)) + Number(Math.floor(el.segments[1].duration / 60) - 24)
-      : Number(el.segments[1].date
-        .split('T')[1]
-        .split('.')[0]
-        .split(':')
-        .splice(0, 1)) + Math.floor(el.segments[1].duration / 60),
+        ? Number(el.segments[1].date
+          .split('T')[1]
+          .split('.')[0]
+          .split(':')
+          .splice(0, 1)) + Number(Math.floor(el.segments[1].duration / 60) - 24)
+        : Number(el.segments[1].date
+          .split('T')[1]
+          .split('.')[0]
+          .split(':')
+          .splice(0, 1)) + Math.floor(el.segments[1].duration / 60),
       stepsForward: el.segments[0].stops.length,
       stepsToward: el.segments[1].stops.length,
       stepsForwardCities: el.segments[0].stops.join(', '),
@@ -146,30 +164,30 @@ const AviaSales = props => {
         .split('T')[1]
         .split('.')[0]
         .split(':')
-        .splice(1, 1))  
+        .splice(1, 1))
     }
   ));
-  }
+
 
   let filter = arr.filter(e => e.stepsForward + e.stepsToward === number);
 
-  if (handler.length > 1) {
-    const firstPart = arr.filter(item => item.filter === handler[0] - 1).slice(0, 3);
+  if (filterValue.length > 1) {
+    const firstPart = arr.filter(item => item.filter === filterValue[0] - 1).slice(0, 3);
     const secondPart = arr
-      .filter(item => item.filter === handler[handler.length - 1] - 1)
+      .filter(item => item.filter === filterValue[filterValue.length - 1] - 1)
       .slice(0, 2)
       .concat(firstPart);
     filter = secondPart;
   }
 
-  if (handler.length > 2) {
-    const firstPart = arr.filter(item => item.filter === handler[0] - 1).slice(0, 2);
+  if (filterValue.length > 2) {
+    const firstPart = arr.filter(item => item.filter === filterValue[0] - 1).slice(0, 2);
     const secondPart = arr
-      .filter(item => item.filter === handler[handler.length - 1] - 1)
+      .filter(item => item.filter === filterValue[filterValue.length - 1] - 1)
       .slice(0, 1)
       .concat(firstPart);
     const thirdPart = arr
-      .filter(item => item.filter === handler[handler.length - 2] - 1)
+      .filter(item => item.filter === filterValue[filterValue.length - 2] - 1)
       .slice(0, 2)
       .concat(secondPart);
     filter = thirdPart;
@@ -187,32 +205,16 @@ const AviaSales = props => {
     renderingData = data;
   }
   const mappedTickets = renderingData.filter(e => e !== undefined);
-  console.log(mappedTickets)
 
-    //  endpointTimeH: 9
-    //endpointTimeHBack: 12
-    //endpointTimeM: 16
-    //endpointTimeMBack: 46
-    //filter: 1
-    //forward: "MOW-HKT"
-    //id: 5
-    //price: 88402
-    //stepsForward: 1
-    //stepsForwardCities: "BKK"
-    //stepsToward: 0
-    //stepsTowardCities: ""
-    //timeForward: 810
-    //timeToward: 1144
-    //toward: "MOW-HKT"
-
-  const final = mappedTickets.map( el => (
-    { id: el.id,
+  const final = mappedTickets.map(el => (
+    {
+      id: el.id,
       hours: Math.floor(el.timeForward / 60),
       hoursBack: Math.floor(el.timeToward / 60),
       minutes: el.timeForward
-      - Math.floor(el.timeForward / 60) * 60,
+        - Math.floor(el.timeForward / 60) * 60,
       minutesBack: el.timeToward
-      - Math.floor(el.timeToward / 60) * 60,
+        - Math.floor(el.timeToward / 60) * 60,
       forward: el.forward,
       toward: el.toward,
       timeForward: el.timeForward,
@@ -224,35 +226,35 @@ const AviaSales = props => {
       endpointTimeM: el.endpointTimeM >= 10 ? el.endpointTimeM : `0${el.endpointTimeM}`,
       endpointTimeMBack: el.endpointTimeMBack >= 10 ? el.endpointTimeMBack : `0${el.endpointTimeMBack}`,
       Hdur: (el.timeForward - Math.floor(el.timeForward / 60) * 60)
-      + el.endpointTimeM >= 60 && el.hours >= 24 
-      ? el.hours - 23
-      : el.hours >= 24
-      ? el.hours - 24
-      : (el.timeForward - Math.floor(el.timeForward / 60) * 60)
-      + el.endpointTimeM >= 60
-      ? el.hours + 1
-      : el.hours,
-      HdurBack : (el.timeToward - Math.floor(el.timeToward / 60) * 60)
-      + el.endpointTimeMBack >= 60 && el.hoursBack >= 24 
-      ? el.hoursBack - 23
-      : el.hoursBack >= 24
-      ? el.hoursBack - 24
-      : (el.timeToward - Math.floor(el.timeToward / 60) * 60)
-      + el.endpointTimeMBack >= 60
-      ? el.hoursBack + 1
-      : el.hoursBack,
+        + el.endpointTimeM >= 60 && el.hours >= 24
+        ? el.hours - 23
+        : el.hours >= 24
+          ? el.hours - 24
+          : (el.timeForward - Math.floor(el.timeForward / 60) * 60)
+            + el.endpointTimeM >= 60
+            ? el.hours + 1
+            : el.hours,
+      HdurBack: (el.timeToward - Math.floor(el.timeToward / 60) * 60)
+        + el.endpointTimeMBack >= 60 && el.hoursBack >= 24
+        ? el.hoursBack - 23
+        : el.hoursBack >= 24
+          ? el.hoursBack - 24
+          : (el.timeToward - Math.floor(el.timeToward / 60) * 60)
+            + el.endpointTimeMBack >= 60
+            ? el.hoursBack + 1
+            : el.hoursBack,
       Mdur: (el.timeForward - Math.floor(el.timeForward / 60) * 60)
-      + el.endpointTimeM >= 60 
-      ? ((el.timeForward - Math.floor(el.timeForward / 60) * 60)
-      + el.endpointTimeM) - 60
-      : (el.timeForward - Math.floor(el.timeForward / 60) * 60)
-      + el.endpointTimeM,
+        + el.endpointTimeM >= 60
+        ? ((el.timeForward - Math.floor(el.timeForward / 60) * 60)
+          + el.endpointTimeM) - 60
+        : (el.timeForward - Math.floor(el.timeForward / 60) * 60)
+        + el.endpointTimeM,
       MdurBack: (el.timeToward - Math.floor(el.timeToward / 60) * 60)
-      + el.endpointTimeMBack >= 60 
-      ? ((el.timeToward - Math.floor(el.timeToward / 60) * 60)
-      + el.endpointTimeMBack) - 60
-      : (el.timeToward - Math.floor(el.timeToward / 60) * 60)
-      + el.endpointTimeMBack,
+        + el.endpointTimeMBack >= 60
+        ? ((el.timeToward - Math.floor(el.timeToward / 60) * 60)
+          + el.endpointTimeMBack) - 60
+        : (el.timeToward - Math.floor(el.timeToward / 60) * 60)
+        + el.endpointTimeMBack,
       price: el.price,
       company: el.company,
     }
@@ -264,85 +266,85 @@ const AviaSales = props => {
         <CheckboxArea>
           <CheckText>Количество остановок</CheckText>
           {checkbox.map(el => (
-            <CheckboxItem key={el.key}>
+            <CheckboxItem>
               <CheckboxSpan>
-                <Checkbox onClick={() => changing(el.id)} checked={checked.indexOf(el.id) !== -1}>
+                {el.key < 5 ? <Checkbox onClick={() => handleSelectCheckbox(el.id)} checked={checkedCheckboxValue.indexOf(el.id) !== -1}>
                   {el.value}
-                </Checkbox>
+                </Checkbox> : <Checkbox onClick={() => handleSelectAll(el.id)} checked={checkedCheckboxValue.indexOf(el.id) !== -1} > {el.value}</Checkbox > }
               </CheckboxSpan>
             </CheckboxItem>
           ))}
         </CheckboxArea>
-        <div className={classes.wrapper}>
-          <ButtonArea>
-            <Button onClick={cheap}>
-              <p>Самый дешевый</p>
-            </Button>
-            <Button onClick={quick}>
-              <p>Самый быстрый</p>
-            </Button>
-          </ButtonArea>
-          {final.map(el => (
-            <TicketsArea key={el.id}>
-              <PriceArea>
-                <p>{`${el.price} P`}</p>
-                <img src={el.company} alt="" />
-              </PriceArea>
-              <DescriptionArea>
-                <FirstPoint>
-                  <ul>
-                    <li>
-                      <span>{el.forward}</span>
-                    </li>
-                    <li>
-                      {`${el.endpointTimeH}:${el.endpointTimeM} - ${el.Hdur < 10 ? `0${el.Hdur}`: el.Hdur}: 
-                      ${ el.Mdur >= 10 ? el.Mdur : `0${el.Mdur}` }`}
-                    </li>
-                  </ul>
-                  <ul>
-                    <li>
-                      <span>в пути</span>
-                    </li>
-                    <li>
-                      {`${el.hours < 10 ? `0${el.hours}`: el.hours} час ${el.minutes < 10 ? `0${el.minutes}`: el.minutes} мин`}
-                    </li>
-                  </ul>
-                  <ul>
-                    <li>
-                      <span>Пересадки</span>
-                    </li>
-                    <li>{el.stepsForwardCities.length > 0 ? el.stepsForwardCities : 'Нет'}</li>
-                  </ul>
-                </FirstPoint>
-                <SecondPoint>
-                  <ul>
-                    <li>
-                      <span>{el.toward}</span>
-                    </li>
-                    <li>
-                      {`${el.endpointTimeHBack}:${el.endpointTimeMBack} - ${ el.HdurBack < 10 ? `0${el.HdurBack}`: el.HdurBack }: 
+            <div className={classes.wrapper}>
+              <ButtonArea>
+                <Button onClick={handleCheapiest}>
+                  <p>Самый дешевый</p>
+                </Button>
+                <Button onClick={handleQuickliest}>
+                  <p>Самый быстрый</p>
+                </Button>
+              </ButtonArea>
+              {final.map(el => (
+                <TicketsArea key={el.id}>
+                  <PriceArea>
+                    <p>{`${el.price} P`}</p>
+                    <img src={el.company} alt="" />
+                  </PriceArea>
+                  <DescriptionArea>
+                    <FirstPoint>
+                      <ul>
+                        <li>
+                          <span>{el.forward}</span>
+                        </li>
+                        <li>
+                          {`${el.endpointTimeH}:${el.endpointTimeM} - ${el.Hdur < 10 ? `0${el.Hdur}` : el.Hdur}: 
+                      ${ el.Mdur >= 10 ? el.Mdur : `0${el.Mdur}`}`}
+                        </li>
+                      </ul>
+                      <ul>
+                        <li>
+                          <span>в пути</span>
+                        </li>
+                        <li>
+                          {`${el.hours < 10 ? `0${el.hours}` : el.hours} час ${el.minutes < 10 ? `0${el.minutes}` : el.minutes} мин`}
+                        </li>
+                      </ul>
+                      <ul>
+                        <li>
+                          <span>Пересадки</span>
+                        </li>
+                        <li>{el.stepsForwardCities.length > 0 ? el.stepsForwardCities : 'Нет'}</li>
+                      </ul>
+                    </FirstPoint>
+                    <SecondPoint>
+                      <ul>
+                        <li>
+                          <span>{el.toward}</span>
+                        </li>
+                        <li>
+                          {`${el.endpointTimeHBack}:${el.endpointTimeMBack} - ${el.HdurBack < 10 ? `0${el.HdurBack}` : el.HdurBack}: 
                       ${ el.MdurBack >= 10 ? el.MdurBack : `0${el.MdurBack}`}`}
-                    </li>
-                  </ul>
-                  <ul>
-                    <li>
-                      <span>в пути</span>
-                    </li>
-                    <li>
-                      {`${el.hoursBack < 10 ? `0${el.hoursBack}`: el.hoursBack} час ${el.minutesBack < 10 ? `0${el.minutesBack}`: el.minutesBack} мин`}
-                    </li>
-                  </ul>
-                  <ul>
-                    <li>
-                      <span>Пересадки</span>
-                    </li>
-                    <li>{el.stepsTowardCities.length > 0 ? el.stepsTowardCities : 'Нет'}</li>
-                  </ul>
-                </SecondPoint>
-              </DescriptionArea>
-            </TicketsArea>
-          ))}
-        </div>
+                        </li>
+                      </ul>
+                      <ul>
+                        <li>
+                          <span>в пути</span>
+                        </li>
+                        <li>
+                          {`${el.hoursBack < 10 ? `0${el.hoursBack}` : el.hoursBack} час ${el.minutesBack < 10 ? `0${el.minutesBack}` : el.minutesBack} мин`}
+                        </li>
+                      </ul>
+                      <ul>
+                        <li>
+                          <span>Пересадки</span>
+                        </li>
+                        <li>{el.stepsTowardCities.length > 0 ? el.stepsTowardCities : 'Нет'}</li>
+                      </ul>
+                    </SecondPoint>
+                  </DescriptionArea>
+                </TicketsArea>
+              ))}
+            </div>
       </div>
     );
   }
